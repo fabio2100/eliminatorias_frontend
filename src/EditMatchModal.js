@@ -14,7 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
-import { Edit } from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
 
 function EditMatchModal({ open, handleClose }) {
   const [searchText, setSearchText] = useState("");
@@ -60,26 +60,41 @@ function EditMatchModal({ open, handleClose }) {
   };
 
   const handleEditClick = async (match) => {
-  
     try {
-      const response = await axios.post('http://localhost:3000/api/editarpartido', {
-        id: match.id,
-        nombreequipolocal: match.nombreequipolocal,
-        nombreequipovisitante: match.nombreequipovisitante,
-        golequipolocal: match.golequipolocal,
-        golequipovisitante: match.golequipovisitante
-      });
-  
+      const response = await axios.post(
+        "http://localhost:3000/api/editarpartido",
+        {
+          id: match.id,
+          nombreequipolocal: match.nombreequipolocal,
+          nombreequipovisitante: match.nombreequipovisitante,
+          golequipolocal: match.golequipolocal,
+          golequipovisitante: match.golequipovisitante,
+        }
+      );
+
       if (response.status === 200) {
-        console.log('Match updated successfully');
+        console.log("Match updated successfully");
         // Aquí puedes manejar la actualización exitosa, como cerrar el modal o mostrar un mensaje
       }
     } catch (error) {
-      console.error('Error updating match:', error);
+      console.error("Error updating match:", error);
       // Aquí puedes manejar el error, como mostrar un mensaje de error
     }
   };
-  
+
+  const handleDeleteClick = async (matchId) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/eliminarpartido", {
+        id: matchId,
+      });
+      if (response.status === 200) {
+        console.log("Match deleted successfully");
+        setMatches(matches.filter((match) => match.id !== matchId));
+      }
+    } catch (error) {
+      console.error("Error deleting match:", error);
+    }
+  };
 
   const handleValueChange = (event, matchId, field) => {
     const value = event.target.value;
@@ -185,6 +200,9 @@ function EditMatchModal({ open, handleClose }) {
                   <TableCell>
                     <IconButton onClick={() => handleEditClick(match)}>
                       <Edit />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteClick(match.id)}>
+                      <Delete />
                     </IconButton>
                   </TableCell>
                 </TableRow>
